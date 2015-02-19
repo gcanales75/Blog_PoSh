@@ -1,3 +1,6 @@
+$on = "Encendida"
+$off = "Apagada"
+
 $jobs = get-vbrjob | where {$_.jobtargettype -eq "backup"}
 $protected = $jobs.getobjectsinjob()
 $vmresp = $protected.name
