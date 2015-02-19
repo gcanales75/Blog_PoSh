@@ -1,0 +1,9 @@
+$jobs = get-vbrjob | where {$_.jobtargettype -eq "backup"}
+$protected = $jobs.getobjectsinjob()
+$vmresp = $protected.name
+
+Get-VM $MyVMs | where{$_.name -notin $vmresp} | 
+Format-Table @{Name="VM";E={$_.name}},
+@{Name="Nombre DNS";E={$_.guest.hostname};a="center"},
+@{Name="IP";E={$_.guest.ipaddress[0]};a="center"},
+@{Name="Estado";E={ if ($_.guest.state -eq $running) { $on } else { $off }};a="center"} -a 
