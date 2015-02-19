@@ -1,10 +1,13 @@
+## Variables de columna "Estado" ##
 $on = "Encendida"
 $off = "Apagada"
 
+## Genera una lista de VM en todos los Jobs de respaldo (backup) ##
 $jobs = get-vbrjob | where {$_.jobtargettype -eq "backup"}
 $protected = $jobs.getobjectsinjob()
 $vmresp = $protected.name
 
+## Crea la tabla con las VMs que no aparecen en la lista de VMs protegidas en alguno de los Jobs ##
 Get-VM $MyVMs | where{$_.name -notin $vmresp} | 
 Format-Table @{Name="VM";E={$_.name}},
 @{Name="Nombre DNS";E={$_.guest.hostname};a="center"},
