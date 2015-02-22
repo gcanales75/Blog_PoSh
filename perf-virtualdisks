@@ -18,6 +18,6 @@ $IOarray = $IOarray | Select name,IOPS,Latencia,Throughput,
 
 $IOarray | FT @{Name="VM";Expression={$_.Name};a="left";width=15},
 @{Name="Throughput(KBps)";Expression={$_.Throughput};a="right";width=10},
-@{Name="Latencia (ms)";Expression={$_.Latencia};a="right";width=10},
+@{Name="Latencia (ms)";Expression={$_.Latencia};a="right";width=9},
 @{Name="IOPS";Expression={$_.IOPS};a="right";width=10},
 @{Name="Rd/Wr";Expression={($_.IORead + "/" + $_.IOWrite)};a="center";width=10} -wrap 
