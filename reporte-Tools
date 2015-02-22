@@ -1,0 +1,12 @@
+## Variables para "traducir" los valores de Status de los Tools que arroja PowerCLI ##
+$current = "guestToolsCurrent"
+$unmanaged = "guestToolsUnmanaged"
+$needsupgrade = "guestToolsNeedUpgrade"
+$ok = "Ok"
+$noact = "No Actualizado"
+$noinstall = "No Instalado"
+ 
+Get-VM $MyVMs | Where {$_.PowerState -eq "PoweredOn"} |
+FT @{Name="VM Name";Expression={$_.name};a="left"},
+@{Name="VMware Tools";E={ if (($_.guest.ExtensionData.Toolsversionstatus -eq $current) -or ($_.guest.ExtensionData.Toolsversionstatus -eq $unmanaged)) { $ok } else {
+if ($_.guest.ExtensionData.Toolsversionstatus -eq $needsupgrade) { $noact } else { $noinstall }}};a="center"} -a
