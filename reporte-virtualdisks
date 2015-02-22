@@ -1,0 +1,12 @@
+$MyVMs = Get-VM
+foreach($VM in $MyVMs){
+Get-VM $VM |Get-HardDisk |
+Format-Table @{Name="VM";Expression={$_.Parent};a="left"},
+@{Name="Disco";Expression={$_.name};a="left"},
+@{Name="Capacidad GB";Expression={"{0:N1}" -f $_.CapacityGB};a="right"},
+@{Name="Formato";Expression={if ($_.StorageFormat -eq 'Thin') { "Thin" } else { "Thick" }};a="center"},
+@{Name="RDM";Expression={if ($_.ExtensionData.backing.LunUuid -ne $null) { "Si" } else { "No" }};a="center"},
+@{Name="Independiente";Expression={if ($_.Persistence -eq 'Persistent') { "No" } else { "Si" }};a="center"},
+@{Name="Persistente";Expression={if ($_.Persistence -eq 'IndependentPersistent' -or 'Persistent') { "Si" } else { "No" }};a="center"},
+@{Name="Datastore";Expression={$_.FileName.Split(']')[0].TrimStart('[')};a="center"},
+@{Name="Folder/VMDK";Expression={$_.filename.Split(']')[1]};a="left"} -a
