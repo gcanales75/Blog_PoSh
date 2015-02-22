@@ -1,4 +1,6 @@
+## Horario inicio de operaciones ##
 $abre = get-date -hour 8 -minute 0 -second 0
+## Horarios cierre de operaciones ##
 $cierre = get-date -hour 16 -minute 0 -second 0
 
 $IOarray = Get-VMHost *217,*218 |Get-VM | Where {$_.PowerState -eq "PoweredOn"} | select name,
