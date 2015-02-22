@@ -1,0 +1,21 @@
+## vSphere 5.5 + Veeam 8
+ 
+## Aqui y ahora =)
+$tiempo = Get-Date
+ 
+## Buscamos en las ultimas 24 horas todas las VM creadas u OVA/OVF "deployed"
+$nuevasVM1 = Get-VIEvent -Start $tiempo.AddDays(-1) | where {$_.FullFormattedMessage -like "*created virtual machine*"}
+$nuevas1 = $nuevasVM1.Vm.Name
+## Agregamos al job de respaldo $MiJob las VMs encontradas
+foreach ($vm1 in $nuevas1) {
+Find-VBRViEntity -Name $vm1 | Add-VBRViJobObject -Job $MiJob
+}
+ 
+## Buscamos en las ultimas 24 horas todas las VMs clonadas
+$nuevasVM2 = Get-VIEvent -Start $tiempo.AddDays(-1) | where {$_.FullFormattedMessage -like "*Cloning*"}
+$nuevas2 = $nuevasVM2.DestName
+
+## Agregamos al job de respaldo $MiJob las VMs encontradas
+foreach ($vm2 in $nuevas2) {
+Find-VBRViEntity -Name $vm2 | Add-VBRViJobObject -Job $MiJob
+}
