@@ -3,7 +3,7 @@ $abre = get-date -hour 8 -minute 0 -second 0
 ## Horarios cierre de operaciones ##
 $cierre = get-date -hour 16 -minute 0 -second 0
 
-$IOarray = Get-VMHost *217,*218 |Get-VM | Where {$_.PowerState -eq "PoweredOn"} | select name,
+$IOarray = Get-VM $MisVMs | Where {$_.PowerState -eq "PoweredOn"} | select name,
 @{N="IORead";E={[Math]::Round((($_ |Get-Stat -Stat virtualDisk.numberReadAveraged.average -Start $abre.adddays(-5) -finish $cierre.adddays(-1) |Measure-Object Value -Average).Average),2)}},
 @{N="IOWrite";E={[Math]::Round((($_ |Get-Stat -Stat virtualDisk.numberWriteAveraged.average -Start $abre.adddays(-5) -finish $cierre.adddays(-1) |Measure-Object Value -Average).Average),2)}},
 @{N="LatRead";E={[Math]::Round((($_ |Get-Stat -Stat virtualDisk.totalReadLatency.average -Start $abre.adddays(-5) -finish $cierre.adddays(-1) |Measure-Object Value -Average).Average),2)}},
