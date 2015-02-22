@@ -1,0 +1,23 @@
+$abre = get-date -hour 8 -minute 0 -second 0
+$cierre = get-date -hour 16 -minute 0 -second 0
+
+$IOarray = Get-VMHost *217,*218 |Get-VM | Where {$_.PowerState -eq "PoweredOn"} | select name,
+@{N="IORead";E={[Math]::Round((($_ |Get-Stat -Stat virtualDisk.numberReadAveraged.average -Start $abre.adddays(-5) -finish $cierre.adddays(-1) |Measure-Object Value -Average).Average),2)}},
+@{N="IOWrite";E={[Math]::Round((($_ |Get-Stat -Stat virtualDisk.numberWriteAveraged.average -Start $abre.adddays(-5) -finish $cierre.adddays(-1) |Measure-Object Value -Average).Average),2)}},
+@{N="LatRead";E={[Math]::Round((($_ |Get-Stat -Stat virtualDisk.totalReadLatency.average -Start $abre.adddays(-5) -finish $cierre.adddays(-1) |Measure-Object Value -Average).Average),2)}},
+@{N="LatWrite";E={[Math]::Round((($_ |Get-Stat -Stat virtualDisk.totalWriteLatency.average -Start $abre.adddays(-5) -finish $cierre.adddays(-1) |Measure-Object Value -Average).Average),2)}},
+@{N="Throughput";E={[Math]::Round((($_ |Get-Stat -Stat disk.usage.average -Start $abre.adddays(-5) -finish $cierre.adddays(-1) |Measure-Object Value -Average).Average),2)}}
+
+$IOarray = $IOarray | Select name,IORead,IOWrite,Throughput,
+@{Name="IOPS";Expression={($_.IORead + $_.IOWrite)}},
+@{Name="Latencia";Expression={($_.LatRead + $_.LatWrite)}}
+
+$IOarray = $IOarray | Select name,IOPS,Latencia,Throughput,
+@{Name="IORead";Expression={"{0:N0}" -f (($_.IORead/$_.IOPS) * 100)}},
+@{Name="IOWrite";Expression={"{0:N0}" -f (($_.IOWrite/$_.IOPS) * 100)}}
+
+$IOarray | FT @{Name="VM";Expression={$_.Name};a="left";width=15},
+@{Name="Throughput(KBps)";Expression={$_.Throughput};a="right";width=10},
+@{Name="Latencia (ms)";Expression={$_.Latencia};a="right";width=10},
+@{Name="IOPS";Expression={$_.IOPS};a="right";width=10},
+@{Name="Rd/Wr";Expression={($_.IORead + "/" + $_.IOWrite)};a="center";width=10} -wrap 
