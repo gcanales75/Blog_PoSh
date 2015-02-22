@@ -1,0 +1,13 @@
+$truePG = "True"
+$reject = "Reject"
+$accept = "Accept"
+$hosts = Get-VMHost -Location HA-DRS
+
+foreach ($miesx in $hosts){
+Write-Host "-- Configuración PortGroup Security Policy VM Networking en host $miesx"
+Get-VMHost $miesx | Get-VirtualPortGroup | Where {$_.Port.Type -ne "host"} | Get-SecurityPolicy |
+Format-Table @{Name="Port Group";E={$_.VirtualPortGroup};a="left"},
+@{Name="Promiscuous Mode";Expression={ if ($_.AllowPromiscuous -eq $truePG) { $accept } else { $reject }};a="center"},
+@{Name="Mac Address Changes";Expression={ if ($_.MacChanges -eq $truePG) { $accept } else { $reject }};a="center"},
+@{Name="Forged Transmits";Expression={ if ($_.ForgedTransmits -eq $truePG) { $accept } else { $reject }};a="center"} -a
+}
