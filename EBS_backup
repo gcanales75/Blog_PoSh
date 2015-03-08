@@ -4,10 +4,10 @@ $id = $instancia.InstanceId
 $disco = Get-EC2Volume | Where-Object {$_.Attachment.InstanceId -eq $id}
 
 $fecha = Get-Date -Format "yyMMdd-HHmm"
-$description = "backup-$fecha-$nombre"
+$descripcion = "backup-$fecha-$nombre"
 
-# Snapshots a mí!!
-New-EC2Snapshot -VolumeId $disco.VolumeId -Description $description
+# Snapshots a mi !!
+New-EC2Snapshot -VolumeId $disco.VolumeId -Description $descripcion
 
 # Elimina el Snapshot que tienen mas de 7 días (Bueno, mas de 165 horas, o 6 días + 21 horas)
 $7dias = (Get-Date).addhours(-165)
